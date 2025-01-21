@@ -150,7 +150,7 @@
             $(".carton-box").click(function () {
                 const cartonNumber = $(this).data("carton");
                 $(".popup-overlay").fadeIn();
-                const imageUrl = `/static/cartones/C_${cartonNumber}.jpg`; 
+                const imageUrl = `/static/cartones/C (${cartonNumber}).jpg`;
                 $(".popup-content img").attr("src", imageUrl);
                 $(".popup-content img").attr("alt", "Cartón " + cartonNumber);
                 $(".popup-content").data("carton", cartonNumber);
