@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/img/logo.jpg" type="image/x-icon">
+    <title>Selección de Cartones</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <style>
+
+        body {
+            background-color: #000000;
+            margin-bottom: 30%;
+        }
+        /* Estilo para las cajas de cartones */
+        .carton-box {
+            cursor: pointer;
+            width: 100%;
+            max-width: 100px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            border: 2px solid #4da6ff !important;
+            background-color: #ecf1f5;
+            transition: all 0.3s ease;
+        }
+
+        .carton-box:hover {
+            background-color: #a5c6e3;
+        }
+
+        /* Texto dentro de las cajas */
+        .texto {
+            font-size: 14px;
+            color: #191919;
+            transition: color 0.3s ease;
+        }
+
+/* Estilo personalizado para el botón */
+.btn-custom {
+    background: #2575fc !important; /* Asegúrate de que este color se aplique */
+    color: white;
+    font-size: 14px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.btn-custom:hover {
+    background: #1e5fd0 !important; /* Azul más oscuro al pasar el mouse */
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    color: white;
+    cursor: pointer;
+}
+
+.btn-custom:active {
+    background: #1c54b8 !important; /* Fondo aún más oscuro al hacer clic */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: rgb(0, 0, 0); /* Fondo opcional para el área del botón */
+    padding: 12px 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0); /* Sombra para destacar el botón */
+}
+
+        /* Estilo para el popup */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilo para cartones seleccionados */
+        .carton-selected {
+            border: 2px solid #479e00c7 !important;
+            background-color: #9bff77 !important;
+        }
+
+        .carton-selected .texto {
+            color: #182518 !important;
+        }
+
+        /* Imagen en el popup */
+        .popup-content img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <center>
+    <img src="/static/img/logo.jpg" style="width: 15%; margin-bottom: -45px;" alt="">
+</center>
+    <div class="container mt-5">
+        <center>
+        <div >
+            <strong class="text-center" style="font-size: 1.5rem; color: rgb(221, 0, 0);">Cada carton cuesta {{ precio }}bs</strong>
+        </div>
+    </center>
+        <h1 style="color: rgb(27, 183, 214);" class="text-center mb-4">Cartones Disponibles</h1>
+        <div class="row justify-content-center">
+            {% for carton in cartones %}
+            <div class="col-3 col-sm-3 col-md-2 col-lg-1 mb-3 d-flex">
+                <div class="carton-box border text-center rounded shadow-sm" data-carton="{{ carton }}">
+                    <strong class="texto">{{ carton }}</strong>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+        <!-- Fixed-bottom Container -->
+        <div class="fixed-bottom bg-light d-flex justify-content-between align-items-center p-3 border-top">
+            <form id="cartonesForm" action="{{ url_for('pago') }}" method="POST">
+                <input type="hidden" name="cartones" id="cartones">  <!-- Campo para cartones seleccionados -->
+                <input type="hidden" name="total" id="totalPrice">    <!-- Campo para el precio total en bolívares -->
+                <input type="hidden" name="total2" id="totalPrice2">  <!-- Campo para el precio total en dólares -->
+
+                <div class="fixed-bottom bg-light d-flex justify-content-between align-items-center p-3 border-top">
+                    <div class="ms-3">
+                        <strong class="total-price" style="font-size: 1.6rem; color: rgb(3, 115, 196);">Total: $0</strong>
+                    </div>
+                    <div class="mr-3">
+                        <button class="btn btn-custom" style="font-size: large;" type="submit">Confirmar selección</button>
+                    </div>
+                </div>
+            </form>
+
+
+
+    <!-- Popup -->
+    <div class="popup-overlay">
+        <div class="popup-content">
+            <img src="" alt="Imagen del Cartón" class="img-fluid mb-3">
+            <div class="buttons">
+                <button class="btn btn-success btn-sm select-btn">Seleccionar</button>
+                <button class="btn btn-danger btn-sm deselect-btn">Deseleccionar</button>
+            </div>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    alert("{{ message }}");
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js" integrity="sha512-8BHxHDLsOHx+flIrQ0DrZcea7MkHqRU5GbTHmbdzMRnAaoCIkZ97PqZcXJkKZckMMhqfoeaJE+DNUVuyoQsO3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+       $(document).ready(function () {
+    let selectedCartones = [];
+    let basePrice = `{{ precio }}`; // Precio base por cartón
+    let basePrice2 = `{{ precio_dolares }}`; // Precio base en dólares
+    let isThreeForTwoMode = `{{ modalidad }}`; // Cambiar a `true` para activar la promoción 3x2
+
+    $(".carton-box").click(function () {
+        const cartonNumber = $(this).data("carton");
+        $(".popup-overlay").fadeIn();
+        const imageUrl = `/static/cartones/C (${cartonNumber}).jpg`;
+        $(".popup-content img").attr("src", imageUrl);
+        $(".popup-content img").attr("alt", "Cartón " + cartonNumber);
+        $(".popup-content").data("carton", cartonNumber);
+    });
+
+    $(".popup-overlay").click(function (e) {
+        if ($(e.target).is(".popup-overlay")) {
+            $(".popup-overlay").fadeOut();
+        }
+    });
+
+    $(".select-btn").click(function () {
+        const cartonNumber = $(".popup-content").data("carton");
+        const cartonElement = $(`.carton-box[data-carton='${cartonNumber}']`);
+
+        if (!selectedCartones.includes(cartonNumber)) {
+            selectedCartones.push(cartonNumber);
+            cartonElement.addClass("carton-selected");
+            updateTotalPrice();
+        } else {
+            alert("Cartón " + cartonNumber + " ya está seleccionado.");
+        }
+        $(".popup-overlay").fadeOut();
+    });
+
+    $(".deselect-btn").click(function () {
+        const cartonNumber = $(".popup-content").data("carton");
+        const index = selectedCartones.indexOf(cartonNumber);
+        const cartonElement = $(`.carton-box[data-carton='${cartonNumber}']`);
+
+        if (index !== -1) {
+            selectedCartones.splice(index, 1);
+            cartonElement.removeClass("carton-selected");
+            updateTotalPrice();
+        } else {
+            alert("Cartón " + cartonNumber + " no está seleccionado.");
+        }
+        $(".popup-overlay").fadeOut();
+    });
+
+    function calculateTotalPrice(basePriceValue) {
+        let total = 0;
+
+        if (isThreeForTwoMode === "Activado") {
+            const freeCount = Math.floor(selectedCartones.length / 3); // Cada tercer cartón es gratis
+            total = (selectedCartones.length - freeCount) * basePriceValue;
+        } else {
+            total = selectedCartones.length * basePriceValue; // Modo precio fijo
+        }
+
+        return total;
+    }
+
+    function updateTotalPrice() {
+        const total = calculateTotalPrice(basePrice);
+        const totalDollars = calculateTotalPrice(basePrice2);
+
+        $(".total-price").text("Total: " + total + "bs");
+
+        // Actualizamos los campos ocultos en el formulario con los datos
+        $("#cartones").val(selectedCartones); // Enviar directamente el array sin transformarlo
+        $("#totalPrice").val(total);  // Total en bolívares
+        $("#totalPrice2").val(totalDollars);  // Total en dólares
+    }
+    // Validación antes de enviar el formulario
+$("#cartonesForm").submit(function (e) {
+    if (selectedCartones.length === 0) {
+        alert("Por favor, selecciona al menos un cartón antes de continuar.");
+        e.preventDefault(); // Evitar que el formulario se envíe
+    } else {
+        // Verificar que `selectedCartones` sea un array válido
+        const isValidArray = Array.isArray(selectedCartones) && selectedCartones.every(Number.isInteger);
+        if (!isValidArray) {
+            alert("El formato de los cartones seleccionados es inválido.");
+            e.preventDefault(); // Evitar que el formulario se envíe
+        }
+    }
+});
+
+    // Iniciar la actualización del precio total
+    updateTotalPrice();
+});
+
+
+
+
+    </script>
+
+</body>
+</html>
