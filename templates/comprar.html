@@ -164,7 +164,7 @@ input:focus {
 
                 <!-- Cédula -->
         <div class="mb-3">
-            <input type="number" class="form-control" style="width: 80%;" id="n_referencia" name="n_referencia" required placeholder="Numero de referencia de pago movil (Ultimos 4 digitos)" min="0" maxlength="4">
+            <input type="number" class="form-control" style="width: 80%;" id="n_referencia" name="n_referencia" required placeholder="Nº de referencia (Ultimos 4 digitos)" min="0">
         </div>
 
 
@@ -203,6 +203,15 @@ input:focus {
             document.getElementById("telefono_completo").value = telefonoCompleto;
         }
     </script>
+
+<script>
+    const inputReferencia = document.getElementById('n_referencia');
+    inputReferencia.addEventListener('input', function () {
+      if (this.value.length > 4) {
+        this.value = this.value.slice(0, 4); // Limita a los primeros 4 caracteres
+      }
+    });
+  </script>
 
 
 </body>
